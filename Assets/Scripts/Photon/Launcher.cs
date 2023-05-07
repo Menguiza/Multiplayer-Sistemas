@@ -1,16 +1,12 @@
-using System;
 using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
-using TMPro;
-using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private TMP_InputField code;
-    [SerializeField] private TMP_Text error;
     private List<RoomInfo> roomList;
+    private bool firstTime = true;
 
     private void Awake()
     {
@@ -20,37 +16,81 @@ public class Launcher : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        print("Connecting...");
+        UIManager.instace.SetError("Connecting...");
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    public override void OnConnectedToMaster()
+    #region Actions
+
+    public void SetName()
     {
-        print("Connected!");
-        PhotonNetwork.JoinLobby();
+        PhotonNetwork.NickName = UIManager.instace.Username;
     }
 
-    public override void OnJoinedLobby()
+    public void Disconect()
     {
-        print("Joined!");
+        PhotonNetwork.Disconnect();
     }
-
+    
     public void CreateRoom()
     {
         string roomName = GenerateUniqueRoomName();
         RoomOptions options = new RoomOptions();
         options.MaxPlayers = 10;
         PhotonNetwork.CreateRoom(roomName, options);
+        UIManager.instace.DisableCreateButton();
+        UIManager.instace.SetError("Creating...");
     }
 
     public void JoinRoom()
-    {
-        PhotonNetwork.JoinRoom(code.text);
+    { 
+        if(!string.IsNullOrWhiteSpace(UIManager.instace.Code)) PhotonNetwork.JoinRoom(UIManager.instace.Code);
+        else UIManager.instace.SetError("Error: Code Required");
     }
 
-    public override void OnJoinRandomFailed(short returnCode, string message)
+    public void LeaveRoom()
     {
-        error.text = $"Error({returnCode}): {message}";
+        PhotonNetwork.LeaveRoom();
+    }
+
+    #endregion
+
+    #region Events
+
+    public override void OnConnectedToMaster()
+    {
+        UIManager.instace.SetError("Connected!");
+
+        if (firstTime)
+        {
+            firstTime = false;
+            UIManager.instace.OpenMenu("Main");
+        }
+        
+        PhotonNetwork.JoinLobby();
+    }
+
+    public override void OnJoinedLobby()
+    {
+        UIManager.instace.SetError("Joined!");
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        UIManager.instace.OpenMenu("Main");
+        UIManager.instace.SetError(cause.ToString());
+        PhotonNetwork.ConnectUsingSettings();
+    }
+
+    public override void OnJoinedRoom()
+    {
+        UIManager.instace.OpenMenu(2);
+        UIManager.instace.SetRoomCode(PhotonNetwork.CurrentRoom.Name);
+
+        foreach (Player element in PhotonNetwork.PlayerList)
+        {
+            UIManager.instace.PlayerJoin(element);
+        }
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -68,6 +108,40 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        UIManager.instace.PlayerJoin(newPlayer);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        UIManager.instace.PlayerLeave(otherPlayer);
+    }
+
+    public override void OnLeftRoom()
+    {
+        UIManager.instace.ClearContent();
+    }
+
+    #endregion
+
+    #region Errors
+
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
+        UIManager.instace.EnableCreateButton();
+        UIManager.instace.SetError($"Error({returnCode}): {message}");
+    }
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        UIManager.instace.SetError($"Error({returnCode}): {message}");
+    }
+
+    #endregion
+
+    #region Utils
+
     private string GenerateUniqueRoomName()
     {
         string roomName = "";
@@ -82,6 +156,8 @@ public class Launcher : MonoBehaviourPunCallbacks
             if (element.Name == roomName) return GenerateUniqueRoomName();
         }
         
-        return roomName;
+        return roomName.ToUpper();
     }
+
+    #endregion
 }
