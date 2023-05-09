@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -14,6 +15,7 @@ public class PenguinGrab : MonoBehaviour
     private PenguinMovement movement;
     private Vector3 origin;
     private bool slide;
+    private PhotonView pv;
 
     public bool grabbed { get; private set; }
     public bool holded { get; private set; }
@@ -26,6 +28,7 @@ public class PenguinGrab : MonoBehaviour
     void Start()
     {
         movement = GetComponent<PenguinMovement>();
+        pv = GetComponentInParent<PhotonView>();
         origin = grab_R.position;
         CanHold = true;
     }
@@ -33,18 +36,21 @@ public class PenguinGrab : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        SetOrigin();
-        GrabFish();
-
-        if (Input.GetKeyDown(KeyCode.L))
+        if (pv.IsMine)
         {
-            CanHold = false;
-            //call.Hold();
-            Invoke("Escape", holdCountdown);
-            OnHold.Invoke();
-        }
+            SetOrigin();
+            GrabFish();
+
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                CanHold = false;
+                //call.Hold();
+                Invoke("Escape", holdCountdown);
+                OnHold.Invoke();
+            }
         
-        movement.Anim.SetBool("Slide", slide);
+            movement.Anim.SetBool("Slide", slide);
+        }
     }
 
     public void Drop()

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
+using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
@@ -11,7 +13,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private TMP_Text error, roomCode;
     [SerializeField] private TMP_InputField code, username;
-    [SerializeField] private Button createRoom;
+    [SerializeField] private Button createRoom, joinRoom;
     [SerializeField] private PlayerListInfo prefab;
     [SerializeField] private RectTransform content;
 
@@ -34,6 +36,8 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    #region Methods
+
     public void SetError(string error)
     {
         this.error.text = error;
@@ -52,6 +56,16 @@ public class UIManager : MonoBehaviour
     public void EnableCreateButton()
     {
         createRoom.interactable = true;
+    }
+    
+    public void DisableJoinButton()
+    {
+        joinRoom.interactable = false;
+    }
+
+    public void EnableJoinButton()
+    {
+        joinRoom.interactable = true;
     }
 
     public void ClearContent()
@@ -87,26 +101,14 @@ public class UIManager : MonoBehaviour
     
     public void OpenMenu(int index)
     {
-        if (menus.Count > index)
-        {
-            CloseAllMenus();
-            menus.ElementAt(index).gameObject.SetActive(true);
-        }
+        StartCoroutine(OpenMenuCoroutine(index));
     }
 
     public void OpenMenu(string menuName)
     {
-        foreach (Menu element in menus)
-        {
-            if (element.MenuName == menuName)
-            {
-                CloseAllMenus();
-                element.gameObject.SetActive(true);
-                return;
-            }
-        }
+        StartCoroutine(OpenMenuCoroutine(menuName));
     }
-    
+
     public void CloseAllMenus()
     {
         code.text = "";
@@ -114,11 +116,51 @@ public class UIManager : MonoBehaviour
         roomCode.text = "";
         username.text = "";
 
-        createRoom.interactable = true;
+        EnableCreateButton();
+        EnableJoinButton();
         
         foreach (Menu element in menus)
         {
             element.gameObject.SetActive(false);
         }
     }
+
+        #endregion
+
+    #region Coroutines
+
+    IEnumerator OpenMenuCoroutine(int index)
+    {
+        if (menus.Count > index)
+        {
+            CloseAllMenus();
+
+            if(!PhotonNetwork.IsConnectedAndReady) yield return new WaitUntil(()=>PhotonNetwork.IsConnectedAndReady);
+            
+            yield return new WaitForSeconds(0.5f);
+            
+            menus.ElementAt(index).gameObject.SetActive(true);
+        }
+    }
+    
+    IEnumerator OpenMenuCoroutine(string menuName)
+    {
+        foreach (Menu element in menus)
+        {
+            if (element.MenuName == menuName)
+            {
+                CloseAllMenus();
+                
+                if(!PhotonNetwork.IsConnectedAndReady) yield return new WaitUntil(()=>PhotonNetwork.IsConnectedAndReady);
+
+                yield return new WaitForSeconds(0.5f);
+                
+                element.gameObject.SetActive(true);
+                
+                yield return null;
+            }
+        }
+    }
+
+    #endregion
 }

@@ -39,6 +39,11 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - BlueIncrementValue
+  - RedIncrementValue
+  - UpdateBlueIncrementValue
+  - UpdateRedIncrementValue
+  - IncrementIndex
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

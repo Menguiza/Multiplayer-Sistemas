@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -10,6 +11,7 @@ public class PenguinMovement : MonoBehaviour
     private Rigidbody2D rb; // The rigidbody component of the penguin
     private bool movementEnable = true;
     private float horizontalInput, verticalInput;
+    private PhotonView pv;
 
     public Animator Anim { get => anim; }
     public SpriteRenderer Rend { get=>rend; }
@@ -17,11 +19,12 @@ public class PenguinMovement : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>(); // Get the rigidbody component of the penguin
+        pv = GetComponentInParent<PhotonView>();
     }
 
     private void FixedUpdate()
     {
-        if(movementEnable) Movement();
+        if(movementEnable && pv.IsMine) Movement();
     }
 
     public void DisableMovment()

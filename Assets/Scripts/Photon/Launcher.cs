@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Launcher : MonoBehaviourPunCallbacks
@@ -16,15 +17,15 @@ public class Launcher : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        UIManager.instace.SetError("Connecting...");
-        PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.ConnectUsingSettings(); 
+        Debug.Log("Connecting...");
     }
 
     #region Actions
 
     public void SetName()
     {
-        PhotonNetwork.NickName = UIManager.instace.Username;
+        PhotonNetwork.NickName = UIManager.instace.Username.ToUpper();
     }
 
     public void Disconect()
@@ -43,14 +44,25 @@ public class Launcher : MonoBehaviourPunCallbacks
     }
 
     public void JoinRoom()
-    { 
-        if(!string.IsNullOrWhiteSpace(UIManager.instace.Code)) PhotonNetwork.JoinRoom(UIManager.instace.Code);
+    {
+        if (!string.IsNullOrWhiteSpace(UIManager.instace.Code))
+        {
+            UIManager.instace.SetError("Joining!");
+            UIManager.instace.DisableJoinButton();
+            PhotonNetwork.JoinRoom(UIManager.instace.Code);
+        }
         else UIManager.instace.SetError("Error: Code Required");
     }
 
     public void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
+        UIManager.instace.OpenMenu(1);
+    }
+
+    public void StartGame()
+    {
+        PhotonNetwork.LoadLevel(1);
     }
 
     #endregion
@@ -59,7 +71,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        UIManager.instace.SetError("Connected!");
+        Debug.Log("Connected!");
 
         if (firstTime)
         {
@@ -68,17 +80,18 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
         
         PhotonNetwork.JoinLobby();
+        PhotonNetwork.AutomaticallySyncScene = true;
     }
 
     public override void OnJoinedLobby()
     {
-        UIManager.instace.SetError("Joined!");
+        Debug.Log("Joined!");
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
+        Debug.Log(cause.ToString());
         UIManager.instace.OpenMenu("Main");
-        UIManager.instace.SetError(cause.ToString());
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -135,6 +148,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
+        UIManager.instace.EnableJoinButton();
         UIManager.instace.SetError($"Error({returnCode}): {message}");
     }
 

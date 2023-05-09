@@ -390,6 +390,7 @@ GameObject:
   - component: {fileID: 3155867357447076093}
   - component: {fileID: 3155867357447076088}
   - component: {fileID: 3155867357447076095}
+  - component: {fileID: 2938789864525981833}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -644,6 +645,22 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: -0.9}
   m_Size: {x: 1, y: 0.45}
   m_Direction: 1
+--- !u!114 &2938789864525981833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3155867357447076068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &3155867357480321838
 GameObject:
   m_ObjectHideFlags: 0
@@ -1139,6 +1156,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3155867358444186876}
   - component: {fileID: 2198291316314551371}
+  - component: {fileID: 5685312696265271555}
   m_Layer: 0
   m_Name: RedPlayer
   m_TagString: Untagged
@@ -1179,6 +1197,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   userTag: {fileID: 3155867357426847164}
   court: {fileID: 3155867357726565895}
+  pv: {fileID: 5685312696265271555}
+  playerObjects:
+  - {fileID: 3155867358861366295}
+  - {fileID: 3155867358473910447}
+  - {fileID: 3155867357544390368}
+--- !u!114 &5685312696265271555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3155867358444186877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 2938789864525981833}
+  - {fileID: 2453383810216494470}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &3155867358473910447
 GameObject:
   m_ObjectHideFlags: 0
@@ -1262,6 +1309,7 @@ GameObject:
   - component: {fileID: 3155867358705049340}
   - component: {fileID: 3155867358705049330}
   - component: {fileID: 3155867358705049329}
+  - component: {fileID: 2453383810216494470}
   m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
@@ -1407,6 +1455,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!114 &2453383810216494470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3155867358705049341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 1
+    SynchronizeType: 2
+    Name: Movement
+  - Type: 4
+    SynchronizeType: 2
+    Name: Slide
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!1 &3155867358738533334
 GameObject:
   m_ObjectHideFlags: 0

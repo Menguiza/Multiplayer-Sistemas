@@ -20,7 +20,7 @@ public class GameStart : MonoBehaviour
                 button.gameObject.SetActive(false);
             }
 
-            if (PhotonNetwork.CurrentRoom.PlayerCount < 2)
+            if (PhotonNetwork.CurrentRoom.PlayerCount % 2 != 0 || PhotonNetwork.CurrentRoom.PlayerCount > PhotonNetwork.CurrentRoom.MaxPlayers)
             {
                 button.interactable = false;
             }

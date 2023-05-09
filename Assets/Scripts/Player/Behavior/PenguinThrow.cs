@@ -1,3 +1,4 @@
+using Photon.Pun;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,6 +11,7 @@ public class PenguinThrow : MonoBehaviour
 
     private PenguinGrab grab;
     private int count;
+    private PhotonView pv;
     
     public UnityEvent Throwed;
     
@@ -17,12 +19,13 @@ public class PenguinThrow : MonoBehaviour
     void Start()
     {
         grab = GetComponent<PenguinGrab>();
+        pv = GetComponentInParent<PhotonView>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        Throw();
+        if(pv.IsMine) Throw();
     }
 
     public void ResetCount()
