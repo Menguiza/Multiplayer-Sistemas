@@ -44,6 +44,18 @@ MonoBehaviour:
   - UpdateBlueIncrementValue
   - UpdateRedIncrementValue
   - IncrementIndex
+  - FlipSprite
+  - Grabbed
+  - DestroyFish
+  - HoldAction
+  - HoldPUN
+  - CallOnEscape
+  - IncrementCount
+  - CallOnThrow
+  - DropPUN
+  - PlayerLoadedScene
+  - PlayersLoaded
+  - GameEnded
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

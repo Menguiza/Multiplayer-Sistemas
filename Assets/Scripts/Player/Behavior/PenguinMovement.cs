@@ -2,11 +2,12 @@ using Photon.Pun;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PenguinMovement : MonoBehaviour
+public class PenguinMovement : MonoBehaviourPun
 {
     [SerializeField] private float speed = 5f; // The movement speed of the penguin
     [SerializeField] private SpriteRenderer rend, fishRend;
     [SerializeField] private Animator anim;
+    [SerializeField] private PhotonView playerObjView;
     
     private Rigidbody2D rb; // The rigidbody component of the penguin
     private bool movementEnable = true;
@@ -20,11 +21,18 @@ public class PenguinMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>(); // Get the rigidbody component of the penguin
         pv = GetComponentInParent<PhotonView>();
+        
+        anim.SetBool("Flip", rend.flipX);
     }
 
     private void FixedUpdate()
     {
-        if(movementEnable && pv.IsMine) Movement();
+        if (movementEnable)
+        {
+            if(pv.IsMine) Movement();
+            rend.flipX = anim.GetBool("Flip");
+            fishRend.flipX = anim.GetBool("Flip");
+        }
     }
 
     public void DisableMovment()
@@ -39,7 +47,7 @@ public class PenguinMovement : MonoBehaviour
     {
         movementEnable = true;
     }
-
+    
     private void Movement()
     {
         // Get the horizontal and vertical input from the player
@@ -52,21 +60,21 @@ public class PenguinMovement : MonoBehaviour
         // Move the penguin in the desired direction
         rb.MovePosition(rb.position + movement);
 
-        FlipSprite(movement, rend);
-        FlipSprite(movement, fishRend);
+        playerObjView.RPC("FlipSprite", RpcTarget.AllBuffered, movement);
         SetAnim(movement);
     }
-
-    private void FlipSprite(Vector2 movement, SpriteRenderer renderer)
+    
+    [PunRPC]
+    private void FlipSprite(Vector2 movement)
     {
         // Flip the sprite horizontally if moving left, otherwise flip it back to original orientation
         if (movement.x < 0)
         {
-            renderer.flipX = true;
+            anim.SetBool("Flip", true);
         }
         else if(movement.x > 0)
         {
-            renderer.flipX = false;
+            anim.SetBool("Flip", false);
         }
     }
 

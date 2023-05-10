@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Events;
@@ -36,24 +34,23 @@ public class PenguinGrab : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        SetOrigin();
+        
         if (pv.IsMine)
         {
-            SetOrigin();
             GrabFish();
 
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                CanHold = false;
-                //call.Hold();
-                Invoke("Escape", holdCountdown);
-                OnHold.Invoke();
-            }
-        
             movement.Anim.SetBool("Slide", slide);
         }
     }
 
     public void Drop()
+    {
+        pv.RPC("DropPUN", RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    private void DropPUN()
     {
         slide = false;
         Invoke("GrabCD", grabCD);
@@ -67,12 +64,25 @@ public class PenguinGrab : MonoBehaviour
         alert.SetActive(false);
     }
 
+    [PunRPC]
+    private void Grabbed()
+    {
+        grabbed = true;
+        slide = true;
+    }
+    
     private void GrabCD()
     {
         grabbed = false;
-    }
-
+    } 
+    
     private void Hold()
+    {
+        pv.RPC("HoldPUN", RpcTarget.AllBuffered);
+    }
+    
+    [PunRPC]
+    public void HoldPUN()
     {
         holded = true;
         CanHold = false;
@@ -80,7 +90,7 @@ public class PenguinGrab : MonoBehaviour
         alert.SetActive(true);
         Invoke("HoldCD", holdCountdown);
     }
-
+    
     private void HoldCD()
     {
         OnRelease.Invoke();
@@ -89,6 +99,13 @@ public class PenguinGrab : MonoBehaviour
         alert.SetActive(false);
     }
 
+    [PunRPC]
+    private void HoldAction()
+    {
+        Invoke("Escape", holdCountdown);
+        OnHold.Invoke();
+    }
+    
     private void SetOrigin()
     {
         if (movement.Rend.flipX)
@@ -113,10 +130,8 @@ public class PenguinGrab : MonoBehaviour
                 {
                     if (call.grabbed && call.CanHold)
                     {
-                        CanHold = false;
-                        call.Hold();
-                        Invoke("Escape", holdCountdown);
-                        OnHold.Invoke();
+                        call.HoldPUN();
+                        pv.RPC("HoldAction", RpcTarget.AllBuffered);
                         return;
                     }
                 }
@@ -128,8 +143,7 @@ public class PenguinGrab : MonoBehaviour
             {
                 if (collider.TryGetComponent(out Fish call))
                 {
-                    grabbed = true;
-                    slide = true;
+                    pv.RPC("Grabbed", RpcTarget.AllBuffered);
                     call.Grabbed();
                 }
             }

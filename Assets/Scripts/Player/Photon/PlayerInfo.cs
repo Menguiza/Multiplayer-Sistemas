@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using TMPro;
@@ -42,12 +41,6 @@ public class PlayerInfo : MonoBehaviour
             element.SetActive(true);
         }
     }
-
-    #endregion
-
-    #region Coroutines
-    
-    
 
     #endregion
 }

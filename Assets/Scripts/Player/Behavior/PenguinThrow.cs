@@ -1,3 +1,4 @@
+using System.IO;
 using Photon.Pun;
 using Unity.Mathematics;
 using UnityEngine;
@@ -38,9 +39,9 @@ public class PenguinThrow : MonoBehaviour
         if (grab.holded)
         {
             grab.Drop();
-            Throwed.Invoke();
+            pv.RPC("CallOnThrow", RpcTarget.AllBuffered);
         
-            Rigidbody2D rb = Instantiate(fishPrefab, grab.Origin, quaternion.identity).GetComponent<Rigidbody2D>();
+            Rigidbody2D rb = PhotonNetwork.Instantiate(Path.Combine("Prefab", "Gameplay", "Fish"), grab.Origin, quaternion.identity).GetComponent<Rigidbody2D>();
             
             Vector3 forceDirection = rb.gameObject.transform.position - transform.position;
             forceDirection.x = 0;
@@ -51,14 +52,14 @@ public class PenguinThrow : MonoBehaviour
     
     private void Throw()
     {
-        if (Input.GetKeyDown(KeyCode.Return) && grab.grabbed)
+        if (Input.GetKeyDown(KeyCode.Space) && grab.grabbed)
         {
             if (!grab.holded)
             {
                 grab.Drop();
-                Throwed.Invoke();
+                pv.RPC("CallOnThrow", RpcTarget.AllBuffered);
 
-                Rigidbody2D rb = Instantiate(fishPrefab, grab.Origin, quaternion.identity).GetComponent<Rigidbody2D>();
+                Rigidbody2D rb = PhotonNetwork.Instantiate(Path.Combine("Prefab", "Gameplay", "Fish"), grab.Origin, quaternion.identity).GetComponent<Rigidbody2D>();
             
                 Vector3 forceDirection = rb.gameObject.transform.position - transform.position;
                 forceDirection.y = 0;
@@ -69,13 +70,31 @@ public class PenguinThrow : MonoBehaviour
             {
                 if (count < 10)
                 {
-                    count++;
+                    pv.RPC("IncrementCount", RpcTarget.AllBuffered);
                 }
                 else
                 {
-                    grab.OnEscape.Invoke();
+                    pv.RPC("CallOnEscape", RpcTarget.AllBuffered);
                 }
             }
         }
+    }
+    
+    [PunRPC]
+    private void CallOnThrow()
+    {
+        Throwed.Invoke();
+    }
+    
+    [PunRPC]
+    private void CallOnEscape()
+    {
+        grab.OnEscape.Invoke();
+    }
+
+    [PunRPC]
+    private void IncrementCount()
+    {
+        count++;
     }
 }
