@@ -154,6 +154,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     private void PlayersLoaded()
     {
         allPlayersLoaded = true;
+        Timer.instance.DeactivateWait();
     }
 
     [PunRPC]

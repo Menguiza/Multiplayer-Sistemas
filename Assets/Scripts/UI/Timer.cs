@@ -6,7 +6,8 @@ public class Timer : MonoBehaviour
     public static Timer instance;
 
     [SerializeField] private TMP_Text timer, winResult, redPoints, bluePoints;
-    [SerializeField] private GameObject winScreen;
+    [SerializeField] private GameObject winScreen, waitScreen;
+    [SerializeField] private AudioSource audioSrc;
 
     public string TimerValue
     {
@@ -44,5 +45,11 @@ public class Timer : MonoBehaviour
     public void SetActiveWin()
     {
         winScreen.SetActive(true);
+    }
+
+    public void DeactivateWait()
+    {
+        waitScreen.SetActive(false);
+        audioSrc.Play();
     }
 }

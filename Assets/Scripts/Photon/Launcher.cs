@@ -2,12 +2,15 @@ using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
     private List<RoomInfo> roomList;
     private bool firstTime = true;
+
+    public UnityEvent Connected;
 
     private void Awake()
     {
@@ -77,6 +80,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             firstTime = false;
             UIManager.instace.OpenMenu("Main");
+            Connected.Invoke();
         }
         
         PhotonNetwork.JoinLobby();
