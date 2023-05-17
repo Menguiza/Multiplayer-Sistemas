@@ -4,6 +4,11 @@ using Photon.Pun;
 public class Fish : MonoBehaviour
 {
     [SerializeField] private PhotonView pv;
+
+    public void Awake()
+    {
+        if(pv.Owner != PhotonNetwork.MasterClient) pv.TransferOwnership(PhotonNetwork.MasterClient);
+    }
     
     public void Grabbed()
     {

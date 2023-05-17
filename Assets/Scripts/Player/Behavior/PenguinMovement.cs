@@ -60,11 +60,10 @@ public class PenguinMovement : MonoBehaviourPun
         // Move the penguin in the desired direction
         rb.MovePosition(rb.position + movement);
 
-        playerObjView.RPC("FlipSprite", RpcTarget.AllBuffered, movement);
+        FlipSprite(movement);
         SetAnim(movement);
     }
     
-    [PunRPC]
     private void FlipSprite(Vector2 movement)
     {
         // Flip the sprite horizontally if moving left, otherwise flip it back to original orientation

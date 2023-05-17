@@ -7,7 +7,7 @@ public class PenguinGrab : MonoBehaviour
 {
     public LayerMask fishLayer, playerLayer;
     [SerializeField] private Transform grab_R, grab_L;
-    [SerializeField] private float radius = 1f, grabCD = 0.5f, holdCountdown = 2f;
+    [SerializeField] private float radius = 1f, grabCD = 0.1f, holdCountdown = 2f;
     [SerializeField] private GameObject alert;
 
     private PenguinMovement movement;
@@ -62,6 +62,7 @@ public class PenguinGrab : MonoBehaviour
         CanHold = true;
         movement.EnableMovement();
         alert.SetActive(false);
+        if(pv.IsMine) movement.Anim.SetBool("Grab", false);
     }
 
     [PunRPC]
@@ -93,6 +94,8 @@ public class PenguinGrab : MonoBehaviour
     
     private void HoldCD()
     {
+        if(!holded) return;
+        
         OnRelease.Invoke();
         holded = false;
         CanHold = true;
@@ -132,6 +135,7 @@ public class PenguinGrab : MonoBehaviour
                     {
                         call.Hold();
                         pv.RPC("HoldAction", RpcTarget.AllBuffered);
+                        movement.Anim.SetBool("Grab", true);
                         return;
                     }
                 }

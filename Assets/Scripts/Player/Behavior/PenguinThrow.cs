@@ -7,7 +7,6 @@ using UnityEngine.Events;
 [RequireComponent(typeof(PenguinGrab))]
 public class PenguinThrow : MonoBehaviour
 {
-    [SerializeField] private GameObject fishPrefab;
     [SerializeField] private float throwForce = 10;
 
     private PenguinGrab grab;
@@ -39,14 +38,17 @@ public class PenguinThrow : MonoBehaviour
         if (grab.holded)
         {
             grab.Drop();
-            pv.RPC("CallOnThrow", RpcTarget.AllBuffered);
-        
-            Rigidbody2D rb = PhotonNetwork.Instantiate(Path.Combine("Prefab", "Gameplay", "Fish"), grab.Origin, quaternion.identity).GetComponent<Rigidbody2D>();
+            CallOnThrow();
+
+            if (pv.IsMine)
+            {
+                Rigidbody2D rb = PhotonNetwork.Instantiate(Path.Combine("Prefab", "Gameplay", "Fish"), grab.Origin, quaternion.identity).GetComponent<Rigidbody2D>();
             
-            Vector3 forceDirection = rb.gameObject.transform.position - transform.position;
-            forceDirection.x = 0;
+                Vector3 forceDirection = rb.gameObject.transform.position - transform.position;
+                forceDirection.x = 0;
             
-            rb.AddForceAtPosition(forceDirection.normalized * throwForce, transform.position, ForceMode2D.Impulse);
+                rb.AddForceAtPosition(forceDirection.normalized * throwForce, transform.position, ForceMode2D.Impulse);
+            }
         }
     }
     
@@ -59,23 +61,26 @@ public class PenguinThrow : MonoBehaviour
                 grab.Drop();
                 pv.RPC("CallOnThrow", RpcTarget.AllBuffered);
 
-                Rigidbody2D rb = PhotonNetwork.Instantiate(Path.Combine("Prefab", "Gameplay", "Fish"), grab.Origin, quaternion.identity).GetComponent<Rigidbody2D>();
-            
+                Rigidbody2D rb = PhotonNetwork
+                    .Instantiate(Path.Combine("Prefab", "Gameplay", "Fish"), grab.Origin, quaternion.identity)
+                    .GetComponent<Rigidbody2D>();
+
                 Vector3 forceDirection = rb.gameObject.transform.position - transform.position;
                 forceDirection.y = 0;
-            
+
                 rb.AddForceAtPosition(forceDirection.normalized * throwForce, transform.position, ForceMode2D.Impulse);
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return) && grab.holded)
+        {
+            if (count < 5)
+            {
+                count++;
             }
             else
             {
-                if (count < 10)
-                {
-                    pv.RPC("IncrementCount", RpcTarget.AllBuffered);
-                }
-                else
-                {
-                    pv.RPC("CallOnEscape", RpcTarget.AllBuffered);
-                }
+                pv.RPC("CallOnEscape", RpcTarget.AllBuffered);
             }
         }
     }
@@ -90,11 +95,5 @@ public class PenguinThrow : MonoBehaviour
     private void CallOnEscape()
     {
         grab.OnEscape.Invoke();
-    }
-
-    [PunRPC]
-    private void IncrementCount()
-    {
-        count++;
     }
 }

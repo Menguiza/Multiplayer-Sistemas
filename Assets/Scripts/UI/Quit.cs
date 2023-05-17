@@ -11,7 +11,7 @@ public class Quit : MonoBehaviour
     
     public void PlayAgain()
     {
-        PhotonNetwork.Disconnect();
+        PhotonNetwork.LeaveRoom();
         SceneManager.LoadScene(0);
     }
 }

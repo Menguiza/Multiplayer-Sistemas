@@ -20,6 +20,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
+        if (PhotonNetwork.IsConnected) return;
         PhotonNetwork.ConnectUsingSettings(); 
         Debug.Log("Connecting...");
     }
@@ -60,11 +61,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
-        UIManager.instace.OpenMenu(1);
     }
 
     public void StartGame()
     {
+        PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.LoadLevel(1);
     }
 
@@ -138,6 +139,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         UIManager.instace.ClearContent();
+        UIManager.instace.OpenMenu(1);
     }
 
     #endregion
@@ -176,6 +178,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         
         return roomName.ToUpper();
     }
-
+    
     #endregion
 }

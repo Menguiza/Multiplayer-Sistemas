@@ -92,7 +92,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
             }
         }
     }
-    
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
