@@ -7,7 +7,7 @@ public class PenguinGrab : MonoBehaviour
 {
     public LayerMask fishLayer, playerLayer;
     [SerializeField] private Transform grab_R, grab_L;
-    [SerializeField] private float radius = 1f, grabCD = 0.1f, holdCountdown = 2f;
+    [SerializeField] private float radius = 1f, grabCD = 0.5f, holdCountdown = 2f;
     [SerializeField] private GameObject alert;
 
     private PenguinMovement movement;
@@ -130,7 +130,7 @@ public class PenguinGrab : MonoBehaviour
                 {
                     if (call.grabbed && call.CanHold)
                     {
-                        call.HoldPUN();
+                        call.Hold();
                         pv.RPC("HoldAction", RpcTarget.AllBuffered);
                         return;
                     }

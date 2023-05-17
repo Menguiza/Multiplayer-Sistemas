@@ -22,7 +22,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     private bool allPlayersLoaded, called;
     private float timeRemaining = 150f;
 
-    public UnityEvent GameOver;
+    public UnityEvent GameOver, GameStarted;
 
     private void Awake()
     {
@@ -72,15 +72,23 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             int playerTeam = (int)targetPlayer.CustomProperties["team"];
 
-            if(playerTeam == 0) 
+            if(playerTeam == 0)
             {
-                GameOver.AddListener(PhotonNetwork.Instantiate(Path.Combine("Prefab", "Gameplay", "RedPlayer"), redPos[(int)targetPlayer.CustomProperties["index"]],
-                quaternion.identity).GetComponentInChildren<PenguinMovement>().DisableMovment);
+                PenguinMovement movement = PhotonNetwork.Instantiate(Path.Combine("Prefab", "Gameplay", "RedPlayer"),
+                    redPos[(int)targetPlayer.CustomProperties["index"]],
+                    quaternion.identity).GetComponentInChildren<PenguinMovement>();
+                GameStarted.AddListener(movement.EnableMovement);
+                GameOver.AddListener(movement.DisableMovment);
+                movement.DisableMovment();
             }
             else
             {
-                GameOver.AddListener(PhotonNetwork.Instantiate(Path.Combine("Prefab", "Gameplay", "BluePlayer"), bluePos[(int)targetPlayer.CustomProperties["index"]],
-                    quaternion.identity).GetComponentInChildren<PenguinMovement>().DisableMovment);
+                PenguinMovement movement = PhotonNetwork.Instantiate(Path.Combine("Prefab", "Gameplay", "BluePlayer"),
+                    bluePos[(int)targetPlayer.CustomProperties["index"]],
+                    quaternion.identity).GetComponentInChildren<PenguinMovement>();
+                GameStarted.AddListener(movement.EnableMovement);
+                GameOver.AddListener(movement.DisableMovment);
+                movement.DisableMovment();
             }
         }
     }
@@ -93,7 +101,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
             if (PhotonNetwork.IsMasterClient)
             {
                 SetTeams();
-                SetFishes();
                 StartCoroutine(WaitForPlayers());
             }
             else
@@ -155,6 +162,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         allPlayersLoaded = true;
         Timer.instance.DeactivateWait();
+        GameStarted.Invoke();
     }
 
     [PunRPC]
@@ -206,6 +214,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         }
 
         allPlayersLoaded = true;
-        photonView.RPC("PlayersLoaded", RpcTarget.Others);
+        SetFishes();
+        photonView.RPC("PlayersLoaded", RpcTarget.AllBuffered);
     }
 }

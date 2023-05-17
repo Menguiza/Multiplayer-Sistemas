@@ -478,7 +478,7 @@ MonoBehaviour:
   grab_R: {fileID: 3155867357575733257}
   grab_L: {fileID: 3155867357776240236}
   radius: 0.7
-  grabCD: 0.1
+  grabCD: 0.5
   holdCountdown: 2
   alert: {fileID: 3155867357248193805}
   OnHold:
